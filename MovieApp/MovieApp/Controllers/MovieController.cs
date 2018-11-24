@@ -12,11 +12,11 @@ using System.Threading.Tasks;
 namespace MovieApp.Controllers
 {
     [Route("api/[controller]")]
-    public class MoviesController : Controller
+    public class MovieController : Controller
     {
         private readonly MovieContext context;
 
-        public MoviesController(MovieContext context)
+        public MovieController(MovieContext context)
         {
             this.context = context;
         }
@@ -29,27 +29,26 @@ namespace MovieApp.Controllers
         }
 
         [HttpGet]
-        private IEnumerable<MovieActor> GetActors()
+        [Route("actors")]
+        public async Task<IEnumerable<MovieActor>> GetActors()
         {
-            return GetActorsList();
+            return await GetActorsList();
         }
 
         [HttpGet]
-        []
-        private IEnumerable<MovieProducer> GetProducers()
+        [Route("producers")]
+        public async Task<IEnumerable<MovieProducer>> GetProducers()
         {
-            return GetProducersList();
+            return await GetProducersList();
         }
 
         // GET api/<controller>/5
         [HttpGet("{id}")]
-        public async Task<MovieInformation> Get(int id)
+        public async Task<MovieInformation> Get([FromRoute] int id)
         {
             return await GetMovie(id);
         }
-
         
-
         // POST api/<controller>
         [HttpPost]
         public void Post([FromBody]string value)
@@ -125,9 +124,11 @@ namespace MovieApp.Controllers
             return movies.Where(t=>t.MovieId == id).FirstOrDefault();
         }
 
-        private IEnumerable<MovieActor> GetActorsList()
+        private async Task<IEnumerable<MovieActor>> GetActorsList()
         {
-            List<MovieActor> actors = context.Actors.ToList()
+            List<Actor> actors = await context.Actors.ToListAsync();
+
+            List<MovieActor> movieActors = actors
                                             .Select(t =>
                                             {
                                                 return new MovieActor
@@ -140,17 +141,18 @@ namespace MovieApp.Controllers
                                                 };
                                             }).ToList();
 
-            return actors;
+            return movieActors;
         }
 
-        private IEnumerable<MovieProducer> GetProducersList()
+        private async Task<IEnumerable<MovieProducer>> GetProducersList()
         {
-            List<MovieProducer> producers = context.Actors.ToList()
+            List<Producer> producers = await context.Producers.ToListAsync();
+            List<MovieProducer> movieProducers = producers
                                             .Select(t =>
                                             {
                                                 return new MovieProducer
                                                 {
-                                                    ProducerId = t.ActorId,
+                                                    ProducerId = t.ProducerId,
                                                     Name = t.Name,
                                                     DOB = t.DOB,
                                                     Gender = t.Gender,
@@ -158,7 +160,7 @@ namespace MovieApp.Controllers
                                                 };
                                             }).ToList();
 
-            return producers;
+            return movieProducers;
         }
 
         #endregion Private Methods
