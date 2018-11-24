@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { MatTableModule, MatFormFieldModule, MatNativeDateModule, MatInputModule } from '@angular/material';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatListModule } from '@angular/material/list';
+import { MatSelectModule } from '@angular/material/select';
 
 import { HttpClientModule } from '@angular/common/http';
 
@@ -35,7 +36,8 @@ import { AddMovieComponent } from './add-movie/add-movie.component';
     MatDatepickerModule,
     MatNativeDateModule,
     MatInputModule,
-    MatListModule
+    MatListModule,
+    MatSelectModule
   ],
   providers: [],
   bootstrap: [AppComponent]

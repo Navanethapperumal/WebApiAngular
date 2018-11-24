@@ -12,12 +12,15 @@ import { MovieService } from '../movie.service';
 export class EditMovieComponent implements OnInit {
   movie: MovieInformation;
   movieActors: MovieActor[];
-
+  movieProducers: MovieProducer[];
+  selectedActors: string[] = [];
+  
   constructor(private movieService: MovieService, private route: ActivatedRoute) { }
 
   ngOnInit() {
     this.getMovie();
     this.getActors();
+    this.getProducers();
   }
 
   getMovie(): void {
@@ -26,6 +29,7 @@ export class EditMovieComponent implements OnInit {
       .subscribe(result => {
         this.movie = result;
         //this.dataSource = result;
+        this.selectedActors = this.movie.actors.map(a => a.name);
       }, error => console.error(error));
   }
 
@@ -37,4 +41,11 @@ export class EditMovieComponent implements OnInit {
       }, error => console.error(error));
   }
 
+  getProducers(): void {
+    this.movieService.getProducers()
+      .subscribe(result => {
+        this.movieProducers = result;
+        //this.dataSource = result;
+      }, error => console.error(error));
+  }
 }
