@@ -28,20 +28,6 @@ namespace MovieApp.Controllers
             return await GetMovieList();
         }
 
-        [HttpGet]
-        [Route("actors")]
-        public async Task<IEnumerable<MovieActor>> GetActors()
-        {
-            return await GetActorsList();
-        }
-
-        [HttpGet]
-        [Route("producers")]
-        public async Task<IEnumerable<MovieProducer>> GetProducers()
-        {
-            return await GetProducersList();
-        }
-
         // GET api/<controller>/5
         [HttpGet("{id}")]
         public async Task<MovieInformation> Get([FromRoute] int id)
@@ -122,46 +108,7 @@ namespace MovieApp.Controllers
             IEnumerable<MovieInformation> movies = await GetMovieList();
 
             return movies.Where(t=>t.MovieId == id).FirstOrDefault();
-        }
-
-        private async Task<IEnumerable<MovieActor>> GetActorsList()
-        {
-            List<Actor> actors = await context.Actors.ToListAsync();
-
-            List<MovieActor> movieActors = actors
-                                            .Select(t =>
-                                            {
-                                                return new MovieActor
-                                                {
-                                                    ActorId = t.ActorId,
-                                                    Name = t.Name,
-                                                    DOB = t.DOB,
-                                                    Gender = t.Gender,
-                                                    Bio= t.Bio
-                                                };
-                                            }).ToList();
-
-            return movieActors;
-        }
-
-        private async Task<IEnumerable<MovieProducer>> GetProducersList()
-        {
-            List<Producer> producers = await context.Producers.ToListAsync();
-            List<MovieProducer> movieProducers = producers
-                                            .Select(t =>
-                                            {
-                                                return new MovieProducer
-                                                {
-                                                    ProducerId = t.ProducerId,
-                                                    Name = t.Name,
-                                                    DOB = t.DOB,
-                                                    Gender = t.Gender,
-                                                    Bio = t.Bio
-                                                };
-                                            }).ToList();
-
-            return movieProducers;
-        }
+        }       
 
         #endregion Private Methods
     }

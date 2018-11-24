@@ -15,6 +15,8 @@ const httpOptions = {
 export class MovieService {
 
   private movieAPIUrl = 'api/Movie/';
+  private actorAPIUrl = 'api/Actor/';
+  private producerAPIUrl = 'api/Producer/';
 
   constructor(private http: HttpClient) {
   }
@@ -35,14 +37,14 @@ export class MovieService {
   }
 
   getProducers(): Observable<MovieProducer[]> {
-    return this.http.get<MovieProducer[]>(this.movieAPIUrl + 'producers').pipe(
+    return this.http.get<MovieProducer[]>(this.producerAPIUrl).pipe(
       tap(_ => console.log("service called")),
       catchError(this.handleError<MovieProducer[]>('getProducers'))
     );
   }
 
   getActors(): Observable<MovieActor[]> {
-    return this.http.get<MovieActor[]>(this.movieAPIUrl + 'actors').pipe(
+    return this.http.get<MovieActor[]>(this.actorAPIUrl).pipe(
       tap(_ => console.log("service called")),
       catchError(this.handleError<MovieActor[]>('getActors'))
     );

@@ -12,56 +12,56 @@ namespace MovieApp.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ActorController : ControllerBase
+    public class ProducerController : ControllerBase
     {
         private readonly MovieContext _context;
 
-        public ActorController(MovieContext context)
+        public ProducerController(MovieContext context)
         {
             _context = context;
         }
 
-        // GET: api/Actor
+        // GET: api/Producer
         [HttpGet]
-        public async Task<IEnumerable<MovieActor>> GetActors()
+        public async Task<IEnumerable<MovieProducer>> GetProducers()
         {
-            return await GetActorsListAsync();
+            return await GetProducersListAsync();
         }
 
-        // GET: api/Actor/5
+        // GET: api/Producer/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetActor([FromRoute] int id)
+        public async Task<IActionResult> GetProducer([FromRoute] int id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var actor = await _context.Actors.FindAsync(id);
+            var producer = await _context.Producers.FindAsync(id);
 
-            if (actor == null)
+            if (producer == null)
             {
                 return NotFound();
             }
 
-            return Ok(actor);
+            return Ok(producer);
         }
 
-        // PUT: api/Actor/5
+        // PUT: api/Producer/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutActor([FromRoute] int id, [FromBody] Actor actor)
+        public async Task<IActionResult> PutProducer([FromRoute] int id, [FromBody] Producer producer)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != actor.ActorId)
+            if (id != producer.ProducerId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(actor).State = EntityState.Modified;
+            _context.Entry(producer).State = EntityState.Modified;
 
             try
             {
@@ -69,7 +69,7 @@ namespace MovieApp.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ActorExists(id))
+                if (!ProducerExists(id))
                 {
                     return NotFound();
                 }
@@ -82,58 +82,57 @@ namespace MovieApp.Controllers
             return NoContent();
         }
 
-        // POST: api/Actor
+        // POST: api/Producer
         [HttpPost]
-        public async Task<IActionResult> PostActor([FromBody] Actor actor)
+        public async Task<IActionResult> PostProducer([FromBody] Producer producer)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            _context.Actors.Add(actor);
+            _context.Producers.Add(producer);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetActor", new { id = actor.ActorId }, actor);
+            return CreatedAtAction("GetProducer", new { id = producer.ProducerId }, producer);
         }
 
-        // DELETE: api/Actor/5
+        // DELETE: api/Producer/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteActor([FromRoute] int id)
+        public async Task<IActionResult> DeleteProducer([FromRoute] int id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var actor = await _context.Actors.FindAsync(id);
-            if (actor == null)
+            var producer = await _context.Producers.FindAsync(id);
+            if (producer == null)
             {
                 return NotFound();
             }
 
-            _context.Actors.Remove(actor);
+            _context.Producers.Remove(producer);
             await _context.SaveChangesAsync();
 
-            return Ok(actor);
+            return Ok(producer);
         }
 
         #region Private Methods
-        private bool ActorExists(int id)
+        private bool ProducerExists(int id)
         {
-            return _context.Actors.Any(e => e.ActorId == id);
+            return _context.Producers.Any(e => e.ProducerId == id);
         }
 
-        private async Task<IEnumerable<MovieActor>> GetActorsListAsync()
+        private async Task<IEnumerable<MovieProducer>> GetProducersListAsync()
         {
-            List<Actor> actors = await _context.Actors.ToListAsync();
-
-            List<MovieActor> movieActors = actors
+            List<Producer> producers = await _context.Producers.ToListAsync();
+            List<MovieProducer> movieProducers = producers
                                             .Select(t =>
                                             {
-                                                return new MovieActor
+                                                return new MovieProducer
                                                 {
-                                                    ActorId = t.ActorId,
+                                                    ProducerId = t.ProducerId,
                                                     Name = t.Name,
                                                     DOB = t.DOB,
                                                     Gender = t.Gender,
@@ -141,9 +140,8 @@ namespace MovieApp.Controllers
                                                 };
                                             }).ToList();
 
-            return movieActors;
+            return movieProducers;
         }
         #endregion Private Methods
-
     }
 }
