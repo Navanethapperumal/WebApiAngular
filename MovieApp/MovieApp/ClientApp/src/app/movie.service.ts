@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { merge, Observable, of as observableOf } from 'rxjs';
 import { catchError, map, startWith, switchMap, tap } from 'rxjs/operators';
 import { MovieInformation, MovieProducer, MovieActor } from './MovieModel';
+import { Gender } from './gender.enum'
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })

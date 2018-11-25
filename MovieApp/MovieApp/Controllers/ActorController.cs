@@ -84,8 +84,17 @@ namespace MovieApp.Controllers
 
         // POST: api/Actor
         [HttpPost]
-        public async Task<IActionResult> PostActor([FromBody] Actor actor)
+        public async Task<IActionResult> PostActor([FromBody] MovieActor actorInfo)
         {
+            Actor actor = new Actor
+            {
+                Name = actorInfo.Name,
+                DOB = actorInfo.DOB,
+                Gender = actorInfo.Gender,
+                Bio = actorInfo.Bio,
+                CreatedDate = DateTime.Now
+            };
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);

@@ -84,8 +84,17 @@ namespace MovieApp.Controllers
 
         // POST: api/Producer
         [HttpPost]
-        public async Task<IActionResult> PostProducer([FromBody] Producer producer)
+        public async Task<IActionResult> PostProducer([FromBody] MovieProducer producerInfo)
         {
+            Producer producer = new Producer
+            {
+                Name = producerInfo.Name,
+                DOB = producerInfo.DOB,
+                Gender = producerInfo.Gender,
+                Bio = producerInfo.Bio,
+                CreatedDate = DateTime.Now
+            };
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);

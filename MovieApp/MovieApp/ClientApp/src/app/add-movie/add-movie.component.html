@@ -30,12 +30,13 @@
       <label for="producer" class="col-sm-2 col-form-label">Producer</label>
       <div class="col-sm-4">
         <mat-form-field>
-          <mat-select placeholder="Producer"  [(ngModel)]="selectedProducer" [ngModelOptions]="{standalone: true}">
+          <mat-select placeholder="Producer" [(ngModel)]="selectedProducer" [ngModelOptions]="{standalone: true}">
             <mat-option *ngFor="let producer of movieProducers" [value]="producer.producerId">
               {{producer.name}}
             </mat-option>
           </mat-select>
         </mat-form-field>
+        <button type="submit" (click)="displayCreateProducer()" class="btn btn-primary" style="margin-left:10px;">New Producer</button>
       </div>
     </div>
 
@@ -47,6 +48,7 @@
             {{actor.name}}
           </mat-list-option>
         </mat-selection-list>
+        <button type="submit" (click)="displayCreateActor()" class="btn btn-primary" style="margin-left:10px;">New Actor</button>
       </div>
     </div>
     <div>
@@ -55,3 +57,5 @@
     </div>
   </form>
 </div>
+
+<app-add-person [isMovieActor]="isMovieActor" *ngIf="showPersonCreateSec" id="addPerson" (sectionCollapsed)="visibilityChangedHandler($event)"></app-add-person>

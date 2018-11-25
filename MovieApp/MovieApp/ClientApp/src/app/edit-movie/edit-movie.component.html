@@ -37,7 +37,7 @@
       <label for="producer" class="col-sm-2 col-form-label">Producer</label>
       <div class="col-sm-4">
         <mat-form-field>
-          <mat-select placeholder="Producer" [value]="selectedProducer">
+          <mat-select placeholder="Producer" [(ngModel)]="selectedProducer" [ngModelOptions]="{standalone: true}">
             <mat-option *ngFor="let producer of movieProducers" [value]="producer.producerId">
               {{producer.name}}
             </mat-option>

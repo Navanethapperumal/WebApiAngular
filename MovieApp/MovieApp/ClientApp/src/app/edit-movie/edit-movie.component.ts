@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { MovieInformation, MovieActor, MovieProducer } from '../MovieModel';
 import { MovieService } from '../movie.service';
 import { Location } from '@angular/common';
-
+import { Gender } from '../gender.enum'
 
 
 @Component({

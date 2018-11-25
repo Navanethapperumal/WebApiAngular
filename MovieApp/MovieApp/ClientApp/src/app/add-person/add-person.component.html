@@ -1,0 +1,52 @@
+<div class="container">
+  <h1 *ngIf="isMovieActor">New Actor Details {{person.name}}</h1>
+  <h1 *ngIf="!isMovieActor">New Producer Details {{person.name}}</h1>
+  <form>
+    <div class="form-group row">
+      <label for="name" class="col-sm-2 col-form-label">Name</label>
+      <div class="col-sm-4">
+        <input [(ngModel)]="person.name" class="form-control" id="name" [ngModelOptions]="{standalone: true}" required>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label for="dob" class="col-sm-2 col-form-label">Date Of Birth</label>
+      <div class="col-sm-4">
+        <mat-form-field>
+          <input matInput [matDatepicker]="picker" [(ngModel)]="person.dob" [ngModelOptions]="{standalone: true}" id="dob">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker startView="year" [startAt]="startDate"></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label for="gender" class="col-sm-2 col-form-label">Gender</label>
+      <div class="col-sm-4">
+        <select name="phoneType" [(ngModel)]="person.gender" [ngModelOptions]="{standalone: true}" id="gender">
+          <option *ngFor="let type of genders.values();">
+            {{type}}
+          </option>
+        </select>
+      </div>
+      <!--<mat-form-field>
+        <mat-select placeholder="Gender" [(ngModel)]="selectedGender" [ngModelOptions]="{standalone: true}" id="gender">
+          <mat-option *ngFor="let key of genders" [value]="key">
+            {{genders[key]}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>-->
+    </div>
+
+    <div class="form-group row">
+      <label for="bio" class="col-sm-2 col-form-label">Bio</label>
+      <div class="col-sm-4">
+        <input [(ngModel)]="person.bio" [ngModelOptions]="{standalone: true}" class="form-control" id="bio">
+      </div>
+    </div>
+    <div>
+      <button type="submit" (click)="createPerson()" class="btn btn-success" style="margin-left:10px;">Submit</button>
+      <button type="submit" (click)="cancel()" class="btn btn-warning" style="margin-left:10px;">Cancel</button>
+    </div>
+  </form>
+</div>

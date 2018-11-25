@@ -3,6 +3,7 @@ import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { MovieInformation } from '../MovieModel';
 import { MovieService } from '../movie.service';
+import { Gender } from '../gender.enum'
 
 @Component({
   selector: 'app-movie-dashboard',

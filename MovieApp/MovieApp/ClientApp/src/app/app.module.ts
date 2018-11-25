@@ -15,6 +15,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { NavComponent } from './nav/nav.component';
 import { EditMovieComponent } from './edit-movie/edit-movie.component';
 import { AddMovieComponent } from './add-movie/add-movie.component';
+import { AddPersonComponent } from './add-person/add-person.component';
 
 
 @NgModule({
@@ -23,7 +24,8 @@ import { AddMovieComponent } from './add-movie/add-movie.component';
     MovieDashboardComponent,
     NavComponent,
     EditMovieComponent,
-    AddMovieComponent
+    AddMovieComponent,
+    AddPersonComponent
   ],
   imports: [
     BrowserModule,

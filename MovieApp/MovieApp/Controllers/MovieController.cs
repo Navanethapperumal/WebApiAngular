@@ -51,11 +51,6 @@ namespace MovieApp.Controllers
         [HttpPost]
         public async Task<IActionResult> PostMovie([FromBody] MovieInformation movieInfo)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             Movie movie = new Movie
             {
                 Name = movieInfo.Name,
@@ -64,6 +59,11 @@ namespace MovieApp.Controllers
                 ReleaseDate = movieInfo.ReleaseYear,
                 CreatedDate = DateTime.Now
             };
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
             context.Movies.Add(movie);
 
@@ -92,11 +92,6 @@ namespace MovieApp.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutMovie([FromRoute] int id, [FromBody] MovieInformation movieInfo)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             Movie movie = new Movie
             {
                 MovieId = movieInfo.MovieId,
@@ -106,18 +101,36 @@ namespace MovieApp.Controllers
                 ReleaseDate = movieInfo.ReleaseYear
             };
 
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             if (id != movie.MovieId)
             {
                 return BadRequest();
             }
 
             List<MovieActorMapping> movieActors = await context.MovieActorMappings.Where(t => t.MovieId == movie.MovieId).ToListAsync();
-            MovieProducerMapping movieProducers = await context.MovieProducerMappings.Where(t => t.MovieId == movie.MovieId).FirstOrDefaultAsync();
+            MovieProducerMapping movieProducer = await context.MovieProducerMappings.Where(t => t.MovieId == movie.MovieId).FirstOrDefaultAsync();
 
             List<MovieActorMapping> removeMovieActors = movieActors.FindAll(t => !movieInfo.Actors.Exists(s => s.ActorId == t.ActorId)).ToList();
             List<MovieActorMapping> newMovieActors = movieInfo.Actors.FindAll(t => !movieActors.Exists(s => s.ActorId == t.ActorId))
                 .Select(t => { return new MovieActorMapping { ActorId = t.ActorId, MovieId = movieInfo.MovieId }; })
                 .ToList();
+
+
+            if(movieProducer.ProducerId != movieInfo.Producer.ProducerId)
+            {
+                MovieProducerMapping newProducer = new MovieProducerMapping
+                {
+                    MovieId = movieInfo.MovieId,
+                    ProducerId = movieInfo.Producer.ProducerId
+                };
+                context.MovieProducerMappings.Remove(movieProducer);
+
+                await context.MovieProducerMappings.AddAsync(newProducer);
+            }
 
             context.Entry(movie).State = EntityState.Modified;
             context.MovieActorMappings.RemoveRange(removeMovieActors);

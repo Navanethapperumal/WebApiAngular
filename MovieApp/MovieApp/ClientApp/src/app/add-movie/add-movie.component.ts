@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { MovieInformation, MovieActor, MovieProducer } from '../MovieModel';
 import { MovieService } from '../movie.service';
 import { Location } from '@angular/common';
-import { projectionDef } from '@angular/core/src/render3';
+import { Gender } from '../gender.enum'
 
 @Component({
   selector: 'app-add-movie',
@@ -17,7 +17,8 @@ export class AddMovieComponent implements OnInit {
   selectedActors: string[] = [];
   selectedProducer: string;
 
-  private a: number = 0;
+  showPersonCreateSec: boolean = false;
+  isMovieActor: boolean = false;
 
   constructor(private movieService: MovieService,
     private route: ActivatedRoute,
@@ -57,5 +58,32 @@ export class AddMovieComponent implements OnInit {
 
   goBack(): void {
     this.location.back();
+  }
+
+  displayCreateActor(): void {
+    this.showPersonCreateSec = true;
+    this.isMovieActor = true;
+
+    this.scrollToPersonSection();
+  }
+
+  displayCreateProducer(): void {
+    this.showPersonCreateSec = true;
+    this.isMovieActor = false;
+
+    this.scrollToPersonSection();
+  }
+
+  scrollToPersonSection(): void {
+    var elmnt = document.getElementById("addPerson");
+    elmnt.scrollIntoView();
+  }
+
+  visibilityChangedHandler(visibility: boolean) {
+    this.showPersonCreateSec = visibility;
+    console.log('person section visibility' + visibility);
+
+    Promise.all([this.getActors(), this.getProducers()]).then(result => {
+    });
   }
 }

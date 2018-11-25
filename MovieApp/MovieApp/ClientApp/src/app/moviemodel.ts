@@ -1,3 +1,5 @@
+import { Gender } from './gender.enum'
+
 export class MovieInformation {
   movieId: string;
   name: string;
@@ -10,7 +12,7 @@ export class MovieInformation {
 
 export class Person {
   name: string;
-  gender: string;
+  gender: Gender;
   dob: Date;
   bio: string;
 }
