@@ -2,6 +2,8 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MovieInformation, MovieActor, MovieProducer } from '../MovieModel';
 import { MovieService } from '../movie.service';
+import { Location } from '@angular/common';
+
 
 
 @Component({
@@ -14,13 +16,19 @@ export class EditMovieComponent implements OnInit {
   movieActors: MovieActor[];
   movieProducers: MovieProducer[];
   selectedActors: string[] = [];
-  
-  constructor(private movieService: MovieService, private route: ActivatedRoute) { }
+  selectedProducer: string;
+
+
+  private a: number = 0;
+
+  constructor(private movieService: MovieService,
+    private route: ActivatedRoute,
+    private location: Location) { }
 
   ngOnInit() {
-    this.getMovie();
-    this.getActors();
-    this.getProducers();
+
+    Promise.all([this.getActors(), this.getProducers(), this.getMovie()]).then(result => {
+    });
   }
 
   getMovie(): void {
@@ -28,8 +36,8 @@ export class EditMovieComponent implements OnInit {
     this.movieService.getMovieById(id)
       .subscribe(result => {
         this.movie = result;
-        //this.dataSource = result;
         this.selectedActors = this.movie.actors.map(a => a.name);
+        this.selectedProducer = this.movie.producer.producerId;
       }, error => console.error(error));
   }
 
@@ -47,5 +55,21 @@ export class EditMovieComponent implements OnInit {
         this.movieProducers = result;
         //this.dataSource = result;
       }, error => console.error(error));
+  }
+
+  updateMoviedetails(): void {
+    this.movie.actors = this.movieActors.filter(t => {
+      return this.selectedActors.includes(t.name);
+    });
+
+    this.movie.producer = this.movieProducers.filter(t => t.producerId == this.selectedProducer)[0];
+
+    this.movieService.updateMovie(this.movie)
+        .subscribe(() => this.goBack());
+    
+  }
+
+  goBack(): void {
+    this.location.back();
   }
 }

@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using MovieApp.Model;
 using MovieApp.ViewModel;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,21 +29,108 @@ namespace MovieApp.Controllers
 
         // GET api/<controller>/5
         [HttpGet("{id}")]
-        public async Task<MovieInformation> Get([FromRoute] int id)
+        public async Task<IActionResult> Get([FromRoute] int id)
         {
-            return await GetMovie(id);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var movie = await GetMovie(id);
+
+            if (movie == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(movie);
         }
-        
-        // POST api/<controller>
+
+        // POST: api/Movies
         [HttpPost]
-        public void Post([FromBody]string value)
+        public async Task<IActionResult> PostMovie([FromBody] MovieInformation movieInfo)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            Movie movie = new Movie
+            {
+                Name = movieInfo.Name,
+                Plot = movieInfo.Plot,
+                Poster = movieInfo.Poster,
+                ReleaseDate = movieInfo.ReleaseYear
+            };
+
+            context.Movies.Add(movie);
+            await context.SaveChangesAsync();
+
+            int movieId = movie.MovieId;
+
+            List<MovieActorMapping> movieActors = movieInfo.Actors.Select(t => { return new MovieActorMapping { ActorId = t.ActorId, MovieId = movieId }; }).ToList();
+            MovieProducerMapping movieProducer = new MovieProducerMapping { MovieId = movieId, ProducerId = movieInfo.Producer.ProducerId };
+
+            await context.MovieActorMappings.AddRangeAsync(movieActors);
+            await context.MovieProducerMappings.AddAsync(movieProducer);
+
+            await context.SaveChangesAsync();
+
+            return CreatedAtAction("Get", new { id = movie.MovieId }, movie);
         }
 
         // PUT api/<controller>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        public async Task<IActionResult> PutMovie([FromRoute] int id, [FromBody] MovieInformation movieInfo)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            Movie movie = new Movie
+            {
+                MovieId = movieInfo.MovieId,
+                Name = movieInfo.Name,
+                Plot = movieInfo.Plot,
+                Poster = movieInfo.Poster,
+                ReleaseDate = movieInfo.ReleaseYear
+            };
+
+            if (id != movie.MovieId)
+            {
+                return BadRequest();
+            }
+
+            List<MovieActorMapping> movieActors = await context.MovieActorMappings.Where(t => t.MovieId == movie.MovieId).ToListAsync();
+            MovieProducerMapping movieProducers = await context.MovieProducerMappings.Where(t => t.MovieId == movie.MovieId).FirstOrDefaultAsync();
+
+            List<MovieActorMapping> removeMovieActors = movieActors.FindAll(t => !movieInfo.Actors.Exists(s => s.ActorId == t.ActorId)).ToList();
+            List<MovieActorMapping> newMovieActors = movieInfo.Actors.FindAll(t => !movieActors.Exists(s => s.ActorId == t.ActorId))
+                .Select(t=> { return new MovieActorMapping { ActorId = t.ActorId, MovieId = movieInfo.MovieId }; })                                    
+                .ToList();
+
+            context.Entry(movie).State = EntityState.Modified;
+            context.MovieActorMappings.RemoveRange(removeMovieActors);
+            await context.MovieActorMappings.AddRangeAsync(newMovieActors);
+
+            try
+            {
+                await context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!MovieExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
         }
 
         // DELETE api/<controller>/5
@@ -76,8 +162,8 @@ namespace MovieApp.Controllers
                 };
 
 
-                movie.Actors = actors.Join(movieActors, a=>a.ActorId, ma=>ma.ActorId, (a, ma)=>new { actor = a, actorMovies = ma })
-                    .Where(t=>t.actorMovies.MovieId == item.MovieId)
+                movie.Actors = actors.Join(movieActors, a => a.ActorId, ma => ma.ActorId, (a, ma) => new { actor = a, actorMovies = ma })
+                    .Where(t => t.actorMovies.MovieId == item.MovieId)
                     .Select(t =>
                 {
                     return new MovieActor { ActorId = t.actor.ActorId, Name = t.actor.Name, Gender = t.actor.Gender, DOB = t.actor.DOB, Bio = t.actor.Bio };
@@ -107,8 +193,13 @@ namespace MovieApp.Controllers
         {
             IEnumerable<MovieInformation> movies = await GetMovieList();
 
-            return movies.Where(t=>t.MovieId == id).FirstOrDefault();
-        }       
+            return movies.Where(t => t.MovieId == id).FirstOrDefault();
+        }
+
+        private bool MovieExists(int id)
+        {
+            return context.Movies.Any(e => e.MovieId == id);
+        }
 
         #endregion Private Methods
     }

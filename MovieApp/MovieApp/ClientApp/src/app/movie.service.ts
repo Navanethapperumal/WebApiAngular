@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { merge, Observable, of as observableOf } from 'rxjs';
 import { catchError, map, startWith, switchMap, tap } from 'rxjs/operators';
 import { MovieInformation, MovieProducer, MovieActor } from './MovieModel';
@@ -47,6 +47,18 @@ export class MovieService {
     return this.http.get<MovieActor[]>(this.actorAPIUrl).pipe(
       tap(_ => console.log("service called")),
       catchError(this.handleError<MovieActor[]>('getActors'))
+    );
+  }
+
+  updateMovie(movie: MovieInformation): Observable<any> {
+
+    const params = new HttpParams().set('id', movie.movieId);
+    const headers = new HttpHeaders().set('content-type', 'application/json');
+    var body = movie;
+
+    return this.http.put<MovieInformation>(this.movieAPIUrl + movie.movieId, body, { headers }).pipe(
+      tap(_ => console.log(`updated movie id=${movie.movieId}`)),
+      catchError(this.handleError<any>('updateMovie'))
     );
   }
 

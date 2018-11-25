@@ -41,4 +41,4 @@ var MovieProducer = /** @class */ (function (_super) {
     return MovieProducer;
 }(Person));
 exports.MovieProducer = MovieProducer;
-//# sourceMappingURL=MovieModel.js.map
+//# sourceMappingURL=moviemodel.js.map
