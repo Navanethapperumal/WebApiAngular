@@ -23,7 +23,7 @@ namespace MovieApp
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            var connectionString = @"server=.;database=Movie;integrated security=true;MultipleActiveResultSets=True;App=EntityFramework;";
+            var connectionString = Configuration["Data:DefaultConnection:ConnectionString"];
 
             services.AddDbContext<MovieApp.Model.MovieContext>(options => options.UseSqlServer(connectionString));
 
