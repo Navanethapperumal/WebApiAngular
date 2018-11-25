@@ -18,9 +18,6 @@ export class EditMovieComponent implements OnInit {
   selectedActors: string[] = [];
   selectedProducer: string;
 
-
-  private a: number = 0;
-
   constructor(private movieService: MovieService,
     private route: ActivatedRoute,
     private location: Location) { }
@@ -65,8 +62,8 @@ export class EditMovieComponent implements OnInit {
     this.movie.producer = this.movieProducers.filter(t => t.producerId == this.selectedProducer)[0];
 
     this.movieService.updateMovie(this.movie)
-        .subscribe(() => this.goBack());
-    
+      .subscribe(() => this.goBack());
+
   }
 
   goBack(): void {

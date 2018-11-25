@@ -50,6 +50,17 @@ export class MovieService {
     );
   }
 
+  createMovie(movie: MovieInformation): Observable<MovieInformation> {
+
+    const headers = new HttpHeaders().set('content-type', 'application/json');
+    var body = movie;
+
+    return this.http.post<MovieInformation>(this.movieAPIUrl, body, { headers }).pipe(
+      tap(_ => console.log(`created movie id=${movie.movieId}`)),
+      catchError(this.handleError<any>('createMovie'))
+    );
+  }
+
   updateMovie(movie: MovieInformation): Observable<any> {
 
     const params = new HttpParams().set('id', movie.movieId);

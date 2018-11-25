@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using MovieApp.Model;
 using MovieApp.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -60,23 +61,31 @@ namespace MovieApp.Controllers
                 Name = movieInfo.Name,
                 Plot = movieInfo.Plot,
                 Poster = movieInfo.Poster,
-                ReleaseDate = movieInfo.ReleaseYear
+                ReleaseDate = movieInfo.ReleaseYear,
+                CreatedDate = DateTime.Now
             };
 
             context.Movies.Add(movie);
-            await context.SaveChangesAsync();
 
-            int movieId = movie.MovieId;
+            try
+            {
+                await context.SaveChangesAsync();
 
-            List<MovieActorMapping> movieActors = movieInfo.Actors.Select(t => { return new MovieActorMapping { ActorId = t.ActorId, MovieId = movieId }; }).ToList();
-            MovieProducerMapping movieProducer = new MovieProducerMapping { MovieId = movieId, ProducerId = movieInfo.Producer.ProducerId };
+                int movieId = movie.MovieId;
 
-            await context.MovieActorMappings.AddRangeAsync(movieActors);
-            await context.MovieProducerMappings.AddAsync(movieProducer);
+                List<MovieActorMapping> movieActors = movieInfo.Actors.Select(t => { return new MovieActorMapping { ActorId = t.ActorId, MovieId = movieId }; }).ToList();
+                MovieProducerMapping movieProducer = new MovieProducerMapping { MovieId = movieId, ProducerId = movieInfo.Producer.ProducerId };
 
-            await context.SaveChangesAsync();
+                await context.MovieActorMappings.AddRangeAsync(movieActors);
+                await context.MovieProducerMappings.AddAsync(movieProducer);
 
-            return CreatedAtAction("Get", new { id = movie.MovieId }, movie);
+                await context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                return BadRequest(ModelState);
+            }
+            return StatusCode(201);
         }
 
         // PUT api/<controller>/5
@@ -107,7 +116,7 @@ namespace MovieApp.Controllers
 
             List<MovieActorMapping> removeMovieActors = movieActors.FindAll(t => !movieInfo.Actors.Exists(s => s.ActorId == t.ActorId)).ToList();
             List<MovieActorMapping> newMovieActors = movieInfo.Actors.FindAll(t => !movieActors.Exists(s => s.ActorId == t.ActorId))
-                .Select(t=> { return new MovieActorMapping { ActorId = t.ActorId, MovieId = movieInfo.MovieId }; })                                    
+                .Select(t => { return new MovieActorMapping { ActorId = t.ActorId, MovieId = movieInfo.MovieId }; })
                 .ToList();
 
             context.Entry(movie).State = EntityState.Modified;
